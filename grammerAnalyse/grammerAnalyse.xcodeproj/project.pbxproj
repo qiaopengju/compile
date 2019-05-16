@@ -26,7 +26,7 @@
 		6DDD8B69228554FF00DA38B6 /* grammerAnalyse */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = grammerAnalyse; sourceTree = BUILT_PRODUCTS_DIR; };
 		6DDD8B6C228554FF00DA38B6 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		6DDD8B732285557100DA38B6 /* grammerAnalyse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = grammerAnalyse.h; sourceTree = "<group>"; };
-		6DF09D52228CEB160035EF22 /* log */ = {isa = PBXFileReference; lastKnownFileType = folder; name = log; path = ../../log; sourceTree = "<group>"; };
+		6DF09D54228CF1610035EF22 /* wAnalyse */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wAnalyse; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,8 +60,8 @@
 			isa = PBXGroup;
 			children = (
 				6DDD8B6C228554FF00DA38B6 /* main.cpp */,
+				6DF09D54228CF1610035EF22 /* wAnalyse */,
 				6DDD8B732285557100DA38B6 /* grammerAnalyse.h */,
-				6DF09D52228CEB160035EF22 /* log */,
 			);
 			path = grammerAnalyse;
 			sourceTree = "<group>";

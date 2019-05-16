@@ -22,11 +22,19 @@ using namespace std;
         getWord();\
     }
 /*check backtracking*/
+#define RETURN_BACKTRACKING()\
+    if (errState == err){\
+        wordIdx = bufferIdx;\
+        nextWordIdx = wordIdx+1;\
+        errState = correct;\
+        return false;\
+    }
 #define CHECK_BACKTRACKING()\
     if (errState == err){\
         wordIdx = bufferIdx;\
+        nextWordIdx = wordIdx+1;\
         errState = correct;\
-        return false;\
+        return;\
     }
 #define PUSH_TO_VECTOR()\
     sTmpW = cTmpW;\
@@ -86,9 +94,9 @@ void loseSymbolCheck(){
 }
 
 int main(){
-    fWords = fopen("../../log/.wAnalyse", "r");
-    gVarTable= fopen("../../log/.var", "w");
-    gProcessTable = fopen("../../log/.pro", "w");
+    fWords = fopen("wAnalyse", "r");
+    gVarTable= fopen(".var", "w");
+    gProcessTable = fopen(".pro", "w");
 
     getWord();
     program();
@@ -108,15 +116,15 @@ void subProgram(){
 
     CHECK_WORD(";");
 
-    //executeList();
-    //CHECK_WORD(";");
-    //CHECK_WORD("end");
+    executeList();
+    CHECK_WORD("end");
+    DEBUG();
 }
 void declareList(){
     declare();
     declareList_();
 }
-bool declareList_(){
+void declareList_(){
     unsigned bufferIdx(wordIdx);
 
     CHECK_WORD(";");
@@ -138,9 +146,11 @@ bool varDeclare(){
     unsigned bufferIdx = wordIdx;
 
     CHECK_WORD("integer");
-    var();
+    if (buffer[wordIdx].type != 4){
+        var();
+    }
 
-    CHECK_BACKTRACKING();
+    RETURN_BACKTRACKING();
     return true;
 }
 void var(){
@@ -158,24 +168,19 @@ void identifier(){
         }
     }
 }
-/*void identifier_(){
-}
-void character(){
-}
-void num(){
-}*/
 bool funcDeclare(){
     unsigned bufferIdx = wordIdx;
 
     CHECK_WORD("integer");
     CHECK_WORD("function");
+    RETURN_BACKTRACKING();
     identifier();
     CHECK_WORD("(");
     parameter();
     CHECK_WORD(")");
     CHECK_WORD(";");
-    //funcBody();
-    CHECK_BACKTRACKING();
+    funcBody();
+    RETURN_BACKTRACKING();
     return true;
 }
 void parameter(){
@@ -183,18 +188,19 @@ void parameter(){
 }
 void funcBody(){
     CHECK_WORD("begin");
-    /*declareList();
+    declareList();
+    CHECK_WORD(";");
     executeList();
-    CHECK_WORD("end");*/
+    CHECK_WORD("end");
 }
 void executeList(){
     execute();
     executeList_();
 }
-bool executeList_(){
+void executeList_(){
     unsigned bufferIdx(wordIdx);
-
     CHECK_WORD(";");
+    CHECK_BACKTRACKING();
     if (!execute()) errState = err;
     CHECK_BACKTRACKING();
 
@@ -219,9 +225,10 @@ bool read(){
 
     CHECK_WORD("read");
     CHECK_WORD("(");
+    RETURN_BACKTRACKING();
     var();
     CHECK_WORD(")");
-    CHECK_BACKTRACKING();
+    RETURN_BACKTRACKING();
     return true;
 }
 bool write(){
@@ -229,27 +236,29 @@ bool write(){
 
     CHECK_WORD("write");
     CHECK_WORD("(");
+    RETURN_BACKTRACKING();
     var();
     CHECK_WORD(")");
-    CHECK_BACKTRACKING();
+    RETURN_BACKTRACKING();
     return true;
 }
 bool assignment(){
     unsigned bufferIdx(wordIdx);
-
+    var();
     CHECK_WORD(":=");
+    RETURN_BACKTRACKING();
     arithmenticExp();
-    CHECK_BACKTRACKING();
+    RETURN_BACKTRACKING();
     return true;
 }
 void arithmenticExp(){
     item();
     arithmenticExp_();
 }
-bool arithmenticExp_(){
+void arithmenticExp_(){
     unsigned bufferIdx(wordIdx);
-
     CHECK_WORD("-");
+    CHECK_BACKTRACKING();
     if (!item()) errState = err;
     CHECK_BACKTRACKING();
 
@@ -262,20 +271,46 @@ bool item(){
     return true;
 }
 bool item_(){
-    unsigned bufferIdx(0);
+    unsigned bufferIdx(wordIdx);
 
     CHECK_WORD("*");
+    RETURN_BACKTRACKING();
     if (!factor()) errState = err;
-    CHECK_BACKTRACKING();
+    RETURN_BACKTRACKING();
     return true;
 }
 bool factor(){
+    unsigned bufferIdx(wordIdx);
     unsigned backTrackNum(0);
 
-    var();
-    if (errState == err) backTrackNum++;
-    if (!constNum()) backTrackNum++;
-    if (backTrackNum == 2) return false;
+    if (!funcCall()){
+        backTrackNum++;
+        errState = correct;
+        var();
+        if (errState == err){
+            backTrackNum++;
+            errState = correct;
+            if (!constNum()){
+                backTrackNum++;
+            }
+        }
+    }
+    /*var();
+    if (errState == err) {
+        backTrackNum++; 
+        errState = correct;
+        if (!constNum()){
+            backTrackNum++;
+            errState = correct;
+            if (!funcCall()) backTrackNum++;
+        }
+    }*/
+    if (backTrackNum == 3) {
+        errState = err;
+        //return false;
+        RETURN_BACKTRACKING();
+    }
+    errState = correct;
     return true;
 }
 bool constNum(){
@@ -295,6 +330,17 @@ bool constNum(){
     }
     return true;
 }
+bool funcCall(){
+    unsigned bufferIdx(wordIdx);
+
+    identifier();
+    CHECK_WORD("(");
+    RETURN_BACKTRACKING();
+    arithmenticExp();
+    CHECK_WORD(")");
+    RETURN_BACKTRACKING();
+    return true;
+}
 /*void unsignedInt(){
 }
 void unsignedInt_(){
@@ -304,12 +350,13 @@ bool condition(){
     unsigned backTrackNum(0);
 
     CHECK_WORD("if");
+    RETURN_BACKTRACKING();
     conditionExp();
     CHECK_WORD("then");
     execute();
     CHECK_WORD("else");
     execute();
-    CHECK_BACKTRACKING();
+    RETURN_BACKTRACKING();
     return true;
 }
 void conditionExp(){
