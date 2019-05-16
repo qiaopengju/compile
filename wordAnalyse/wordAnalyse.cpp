@@ -17,7 +17,7 @@
     else if (!s.compare("write"))state = 9;\
     else
 
-FILE* fProgram, * fwAnalyse, * fwErr;
+FILE *fProgram, *fwAnalyse, *fwErr;
 enum errorTpye{illegal, colonErr};
 int state(0), lineNum(1);
 std::string s("");
@@ -27,9 +27,9 @@ void wordAnalyse(char);
 void accomplishOneW();
 
 int main(){
-    fProgram = fopen("program", "r");
-    fwAnalyse = fopen("log/.wAnalyse", "w");
-    fwErr = fopen("log/.err", "w");
+    fProgram = fopen("../program", "r");
+    fwAnalyse = fopen("../log/.wAnalyse", "w");
+    fwErr = fopen("../log/.err", "w");
 
     char c = getc(fProgram);
     while(c != EOF){
