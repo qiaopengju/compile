@@ -1,5 +1,5 @@
-grammer: main.cpp grammerAnalyse.h makefile
-	clang++ -o grammerAnalyse main.cpp
+grammer: main.cpp grammerAnalyse.h makefile check.cpp
+	clang++ -o grammerAnalyse check.cpp main.cpp
 	make runGrammerAnalyse
 runGrammerAnalyse:
 	./grammerAnalyse

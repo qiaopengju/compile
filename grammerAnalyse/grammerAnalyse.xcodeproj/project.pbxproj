@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6D42A943228E582B005B6B53 /* check.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6D42A942228E582B005B6B53 /* check.cpp */; };
 		6DDD8B6D228554FF00DA38B6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6DDD8B6C228554FF00DA38B6 /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6D42A942228E582B005B6B53 /* check.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = check.cpp; sourceTree = "<group>"; };
 		6DDD8B69228554FF00DA38B6 /* grammerAnalyse */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = grammerAnalyse; sourceTree = BUILT_PRODUCTS_DIR; };
 		6DDD8B6C228554FF00DA38B6 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		6DDD8B732285557100DA38B6 /* grammerAnalyse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = grammerAnalyse.h; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 				6DDD8B6C228554FF00DA38B6 /* main.cpp */,
 				6DF09D54228CF1610035EF22 /* wAnalyse */,
 				6DDD8B732285557100DA38B6 /* grammerAnalyse.h */,
+				6D42A942228E582B005B6B53 /* check.cpp */,
 			);
 			path = grammerAnalyse;
 			sourceTree = "<group>";
@@ -122,6 +125,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6D42A943228E582B005B6B53 /* check.cpp in Sources */,
 				6DDD8B6D228554FF00DA38B6 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

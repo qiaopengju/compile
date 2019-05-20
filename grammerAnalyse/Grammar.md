@@ -1,3 +1,18 @@
+```pascal
+ begin
+    integer k;
+    integer function F(n);
+        begin
+            integer n;
+            if n<=0 then F:=1
+            else F:=n*F(n-1)
+        end;
+    read(m);
+    k:=F(m);
+    write(k)
+end
+```
+
 ```c++
 <PROGRAM> => <SUB_PROGRAM>
 <SUB_PROGRAM> => begin <DECLARE_LIST>; <EXECUTE_LIST> end
@@ -14,7 +29,7 @@
 
 <CHARACTER> => a│b│c│d│e│f│g│h│i│j│k│l│m│n│o │p│q │r│s│t│u│v│w│x│y│z
 <NUM> => 0│1│2│3│4│5│6│7│8│9
-<FUNC_DECLARE> => interger function <IDENTIFIER> (<PARAMETER>); <FUNC_BODY>
+*<FUNC_DECLARE> => interger function <IDENTIFIER> (<PARAMETER>); <FUNC_BODY>
 <PARAMETER> => <VAR>
 <FUNC_BODY> => begin <DECLARE_LIST>; <EXECUTE_LIST> end
 
@@ -61,3 +76,36 @@ end
 
 * 缺少函数调用文法
 * 需回溯判错
+
+---
+
+变量名表
+
+* 变量名vname: char(16)
+
+* 所属过程vproc:char(16)
+* //变量类型vtype: types
+
+* 分类vkind: 0..1(0—变量、1—形参)
+
+* 变量层次vlev: int
+
+* 变量在变量表中的位置vadr: int(相对第一个变量而言)
+
+* types=(ints)
+
+
+
+---
+
+过程名表
+
+* 过程名pname: char(16)
+
+* //过程类型ptype: types
+
+* 过程层次plev: int
+
+* 第一个变量在变量表中的位置fadr: int
+
+* 最后一个变量在变量表中的位置ladr: int
