@@ -3,3 +3,6 @@ grammer: main.cpp grammerAnalyse.h makefile check.cpp
 	make runGrammerAnalyse
 runGrammerAnalyse:
 	./grammerAnalyse
+	cat .var
+	cat .pro
+	cat .err

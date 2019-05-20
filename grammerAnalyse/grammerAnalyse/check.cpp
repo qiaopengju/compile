@@ -89,23 +89,23 @@ void reportErr(){
         for (int j = 0; j < errIden[i].size(); j++){
             switch(i){
                 case 0:  //exe pro
-                    printf("error: undeclared of function: '%s'\n", errIden[i][j].c_str());
+                    fprintf(gErr, "error: undeclared of function: '%s'\n", errIden[i][j].c_str());
                     break;
                 case 1:  //exe var
-                    printf("error: undeclared of variable: '%s'\n", errIden[i][j].c_str());
+                    fprintf(gErr, "error: undeclared of variable: '%s'\n", errIden[i][j].c_str());
                     break;
                 case 2:  //dec pro
-                    printf("error: redefinition of function: '%s'\n", errIden[i][j].c_str());
+                    fprintf(gErr, "error: redefinition of function: '%s'\n", errIden[i][j].c_str());
                     break;
                 case 3: //dec var
-                    printf("error: redefinition of variable: '%s'\n", errIden[i][j].c_str());
+                    fprintf(gErr, "error: redefinition of variable: '%s'\n", errIden[i][j].c_str());
                     break;
                 case 4: //lose symbol
-                    printf("error: loseSymbol %s\n", errIden[i][j].c_str());
+                    fprintf(gErr, "error: loseSymbol %s\n", errIden[i][j].c_str());
                     break;
                 case 5: //match err
                     if (2 * j >= errIden[i].size()) break;
-                    printf("error: unknow symbol '%s', did you mean '%s'?\n", errIden[i][2 * j].c_str(), errIden[i][2 * j + 1].c_str());
+                    fprintf(gErr, "error: unknow symbol '%s', did you mean '%s'?\n", errIden[i][2 * j].c_str(), errIden[i][2 * j + 1].c_str());
                     break;
             }
         }

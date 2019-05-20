@@ -48,6 +48,7 @@ extern stack<string> proStack;
 extern int deep;
 extern int parIdx;
 extern string lastS, nowS;
+extern FILE *gErr;
 
 void program();
 void subProgram();

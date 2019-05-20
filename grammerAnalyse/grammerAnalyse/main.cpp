@@ -45,7 +45,7 @@ using namespace std;
 
 ErrType errState(correct);
 State state;
-FILE *fWords, *gVarTable, *gProcessTable;
+FILE *fWords, *gVarTable, *gProcessTable, *gErr;
 unsigned wordIdx(0), nextWordIdx(1);
 vector<Word> buffer;
 vector<VarTable> varTable, tmpVarTable;
@@ -92,6 +92,7 @@ int main(){
     fWords = fopen("wAnalyse", "r");
     gVarTable= fopen(".var", "w");
     gProcessTable = fopen(".pro", "w");
+    gErr = fopen(".err", "w");
 
     getWord();
     program();
