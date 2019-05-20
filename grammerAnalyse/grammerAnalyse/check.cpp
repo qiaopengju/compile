@@ -4,14 +4,12 @@ vector<string> errIden[6];
 void loseSymbol(){
     errState = correct;
     errIden[4].push_back(lastS);
-    printf("error: loseSymbol %s\n", lastS.c_str());
 }
 
 void matchErr(){
     errState = correct;
     errIden[5].push_back(buffer[wordIdx].word);
     errIden[5].push_back(nowS);
-    printf("error: unknow symbol '%s', did you mean '%s'?\n", buffer[wordIdx].word.c_str(), nowS.c_str());
 }
 
 /*when word correct, do:*/
@@ -101,6 +99,13 @@ void reportErr(){
                     break;
                 case 3: //dec var
                     printf("error: redefinition of variable: '%s'\n", errIden[i][j].c_str());
+                    break;
+                case 4: //lose symbol
+                    printf("error: loseSymbol %s\n", errIden[i][j].c_str());
+                    break;
+                case 5: //match err
+                    if (2 * j >= errIden[i].size()) break;
+                    printf("error: unknow symbol '%s', did you mean '%s'?\n", errIden[i][2 * j].c_str(), errIden[i][2 * j + 1].c_str());
                     break;
             }
         }
