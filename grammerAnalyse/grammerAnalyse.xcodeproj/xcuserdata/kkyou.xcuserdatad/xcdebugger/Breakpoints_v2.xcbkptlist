@@ -10,28 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "grammerAnalyse/check.cpp"
-            timestampString = "580047835.239895"
+            timestampString = "580208306.918468"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "86"
-            endingLineNumber = "86"
-            landmarkName = "setTable(int idx)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "grammerAnalyse/check.cpp"
-            timestampString = "580047835.24008"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "108"
-            endingLineNumber = "108"
-            landmarkName = "reportErr()"
+            startingLineNumber = "7"
+            endingLineNumber = "7"
+            landmarkName = "loseSymbol()"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -42,12 +26,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "grammerAnalyse/main.cpp"
-            timestampString = "580047835.240196"
+            timestampString = "580208306.918628"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "240"
-            endingLineNumber = "240"
-            landmarkName = "write()"
+            startingLineNumber = "172"
+            endingLineNumber = "172"
+            landmarkName = "varDeclare()"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -58,12 +42,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "grammerAnalyse/main.cpp"
-            timestampString = "580047835.24027"
+            timestampString = "580208306.919083"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "205"
-            endingLineNumber = "205"
-            landmarkName = "executeList()"
+            startingLineNumber = "156"
+            endingLineNumber = "156"
+            landmarkName = "declare()"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -74,12 +58,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "grammerAnalyse/main.cpp"
-            timestampString = "580047912.766493"
+            timestampString = "580208306.919384"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "209"
-            endingLineNumber = "209"
-            landmarkName = "executeList_()"
+            startingLineNumber = "142"
+            endingLineNumber = "142"
+            landmarkName = "declareList()"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>

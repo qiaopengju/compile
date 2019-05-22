@@ -11,6 +11,7 @@ using namespace std;
     }
 /*when handle a word*/
 #define CHECK_WORD(s)\
+    lastS = nowS;\
     nowS = s;\
     if (buffer[wordIdx].word != s) {\
         ERR_HANDLE(s);\
@@ -24,7 +25,7 @@ using namespace std;
         wordIdx = bufferIdx;\
         nextWordIdx = wordIdx+1;\
         errState = correct;\
-        clearErrRec();\
+        clearErrRec(loseIdx, matchIdx);\
         return false;\
     }
 #define CHECK_BACKTRACKING()\
@@ -32,7 +33,7 @@ using namespace std;
         wordIdx = bufferIdx;\
         nextWordIdx = wordIdx+1;\
         errState = correct;\
-        clearErrRec();\
+        clearErrRec(loseIdx, matchIdx);\
         return;\
     }
 #define PUSH_TO_VECTOR()\
@@ -40,8 +41,11 @@ using namespace std;
     tmpWord.word = sTmpW;\
     tmpWord.type = tmpT;\
     buffer.push_back(tmpWord);
-#define DEBUG()\
+#define MY_DEBUG()\
     printf("Debug:\tstate:%d index:%d%16s%16s\n", errState, wordIdx, buffer[wordIdx].word.c_str(), buffer[nextWordIdx].word.c_str())
+#define INIT_IDX()\
+    int loseIdx = tmpLoseSymbol.size() - 1;\
+    int matchIdx = tmpMatchErr.size() - 1
 
 ErrType errState(correct);
 State state;
@@ -52,7 +56,7 @@ vector<VarTable> varTable, tmpVarTable;
 vector<ProTable> proTable, tmpProTable;
 stack<string> proStack;
 int deep(-1), parIdx(-1);
-string lastS, nowS;
+string lastS, nowS("");
 
 void getWord(){
     char cTmpW[17], cEndW[17];
@@ -60,7 +64,7 @@ void getWord(){
     struct Word tmpWord;
     int tmpT;
 
-    if (buffer.size() != 0) lastS = buffer[wordIdx].word;
+    //if (buffer.size() != 0) lastS = buffer[wordIdx].word;
     if (nextWordIdx+1 == buffer.size()){ //在buffer顶部,读取新的词
         fscanf(fWords, "%16s %2d%16s 24\n", cTmpW, &tmpT, cEndW);
         PUSH_TO_VECTOR();
@@ -75,6 +79,20 @@ void getWord(){
         fscanf(fWords, "%16s %2d%16s 24\n", cTmpW, &tmpT, cEndW);
         PUSH_TO_VECTOR();
     }
+}
+void printNormalErr(){
+    for (int i = 4; i <=5; i++){
+        for (int j = 0; j < errIden[i].size(); j++){
+            if (i == 4){ //lose symbol
+                fprintf(gErr, "error: loseSymbol %s\n", errIden[i][j].c_str());
+            }else{
+                if (2 * j >= errIden[i].size()) break;
+                fprintf(gErr, "error: unknow symbol '%s', did you mean '%s'?\n", errIden[i][2 * j].c_str(), errIden[i][2 * j + 1].c_str());
+            }
+        }
+    }
+    errIden[4].clear();
+    errIden[5].clear();
 }
 void tableToFile(){
     for (int i = 0; i < proTable.size(); i++){
@@ -126,6 +144,7 @@ void declareList(){
 }
 void declareList_(){
     unsigned bufferIdx(wordIdx);
+    INIT_IDX();
 
     CHECK_WORD(";");
     if (!declare()) errState = err;
@@ -133,12 +152,14 @@ void declareList_(){
     declareList_();
 }
 bool declare(){
-    if (!varDeclare()) 
+    if (!varDeclare()){
         if (!funcDeclare()) return false;
+    }
     return true;
 }
 bool varDeclare(){
     unsigned bufferIdx = wordIdx;
+    INIT_IDX();
 
     CHECK_WORD("integer");
     if (buffer[wordIdx].type != 4){
@@ -154,12 +175,17 @@ void var(){
     identifier();
 }
 void identifier(){
+    lastS = nowS;
+    nowS = "variable";
     if (buffer[wordIdx].type == 10) {
         loseSymbolCheck();
         setTable(wordIdx);
         getWord();
     } else{
-        if (errState == correct) errState = err;
+        if (errState == correct) {
+            errState = err;
+            //if (buffer[wordIdx-1].word == "integer" && buffer[wordIdx].word == ";") loseSymbolCheck();
+        }
         else if (errState == err && buffer[nextWordIdx].type == 10){
             matchErr();
             setTable(nextWordIdx);
@@ -170,6 +196,7 @@ void identifier(){
 bool funcDeclare(){
     state = dec_pro;
     unsigned bufferIdx = wordIdx;
+    INIT_IDX();
 
     CHECK_WORD("integer");
     CHECK_WORD("function");
@@ -190,7 +217,7 @@ void parameter(){
 }
 void funcBody(){
     CHECK_WORD("begin");
-    for (int i = tmpProTable.size() - 1; i >= 0; i--){
+    for (int i = (int)tmpProTable.size() - 1; i >= 0; i--){
         if (tmpProTable[i].plev == deep){
             proStack.push(tmpProTable[i].pname);
             break;
@@ -209,6 +236,8 @@ void executeList(){
 }
 void executeList_(){
     unsigned bufferIdx(wordIdx);
+    INIT_IDX();
+
     CHECK_WORD(";");
     CHECK_BACKTRACKING();
     if (!execute()) errState = err;
@@ -227,6 +256,7 @@ bool execute(){
 }
 bool read(){
     unsigned bufferIdx(wordIdx);
+    INIT_IDX();
 
     CHECK_WORD("read");
     CHECK_WORD("(");
@@ -240,6 +270,7 @@ bool read(){
 }
 bool write(){
     unsigned bufferIdx(wordIdx);
+    INIT_IDX();
 
     CHECK_WORD("write");
     CHECK_WORD("(");
@@ -253,6 +284,7 @@ bool write(){
 }
 bool assignment(){
     unsigned bufferIdx(wordIdx);
+    INIT_IDX();
 
     state = exe_var;
     var();
@@ -270,6 +302,7 @@ void arithmenticExp(){
 }
 void arithmenticExp_(){
     unsigned bufferIdx(wordIdx);
+    INIT_IDX();
 
     CHECK_WORD("-");
     CHECK_BACKTRACKING();
@@ -287,6 +320,7 @@ bool item(){
 }
 bool item_(){
     unsigned bufferIdx(wordIdx);
+    INIT_IDX();
 
     CHECK_WORD("*");
     RETURN_BACKTRACKING();
@@ -298,6 +332,7 @@ bool item_(){
 bool factor(){
     unsigned bufferIdx(wordIdx);
     unsigned backTrackNum(0);
+    INIT_IDX();
 
     state = exe_pro;
     if (!funcCall()){
@@ -341,6 +376,7 @@ bool constNum(){
 bool funcCall(){
     unsigned bufferIdx(wordIdx);
     state = exe_pro;
+    INIT_IDX();
 
     identifier();
     CHECK_WORD("(");
@@ -355,6 +391,7 @@ bool funcCall(){
 bool condition(){
     unsigned bufferIdx(wordIdx);
     unsigned backTrackNum(0);
+    INIT_IDX();
 
     CHECK_WORD("if");
     RETURN_BACKTRACKING();

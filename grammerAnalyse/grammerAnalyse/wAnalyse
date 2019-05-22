@@ -1,7 +1,6 @@
            begin  1            EOLN 24
          integer  3            EOLN 24
                k 10            EOLN 24
-               ; 23            EOLN 24
          integer  3            EOLN 24
         function  7            EOLN 24
                F 10            EOLN 24

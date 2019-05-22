@@ -1,15 +1,27 @@
 #include "grammerAnalyse.h"
 vector<string> errIden[6];
+vector<string> tmpLoseSymbol;
+vector<string> tmpMatchErr;
+vector<int> loseS, matchE;
 
 void loseSymbol(){
     errState = correct;
-    errIden[4].push_back(lastS);
+    //errIden[4].push_back(lastS);
+    tmpLoseSymbol.push_back(lastS);
+    loseS.push_back((int)tmpLoseSymbol.size() - 1);
+    /*if (lastS == "variable") printf("lose identifier\n");
+    else printf("error: loseSymbol %s\n", lastS.c_str());*/
 }
 
 void matchErr(){
     errState = correct;
-    errIden[5].push_back(buffer[wordIdx].word);
-    errIden[5].push_back(nowS);
+    /*errIden[5].push_back(buffer[wordIdx].word);
+    errIden[5].push_back(nowS);*/
+    tmpMatchErr.push_back(buffer[wordIdx].word);
+    tmpMatchErr.push_back(nowS);
+    matchE.push_back((int)tmpMatchErr.size() - 1);
+    matchE.push_back((int)tmpMatchErr.size() - 2);
+    //printf("error: unknow symbol '%s', did you mean '%s'?\n", buffer[wordIdx].word.c_str(), nowS.c_str());
 }
 
 /*when word correct, do:*/
@@ -111,26 +123,36 @@ void reportErr(){
         }
     }
     push();
-    clearErrRec();
+    clearErrRec(0, 0);
 }
-void clearErrRec(){
+void clearErrRec(int loseIdx, int matchIdx){
     for (int i = 0; i < 4; i++) errIden[i].clear();
     tmpVarTable.clear();
     tmpProTable.clear();
+    if (tmpLoseSymbol.size() != 0) tmpLoseSymbol.erase(tmpLoseSymbol.begin() + loseS[0], tmpLoseSymbol.end());
+    if (tmpMatchErr.size() != 0) tmpMatchErr.erase(tmpMatchErr.begin() + matchE[0], tmpMatchErr.end());
+    loseS.clear();
+    matchE.clear();
+    if (tmpLoseSymbol.size() > loseIdx) 
+        tmpLoseSymbol.erase(tmpLoseSymbol.begin() + loseIdx, tmpLoseSymbol.end());
+    if (tmpMatchErr.size() > matchIdx)
+        tmpMatchErr.erase(tmpMatchErr.begin() + matchIdx, tmpMatchErr.end());
 }
 void push(){
     for (int i = 0; i < tmpVarTable.size(); i++) {
         varTable.push_back(tmpVarTable[i]);
-        varTable.end()->vadr = varTable.size() - 1;
+        varTable.end()->vadr = (int)varTable.size() - 1;
     }
     for (int i = 0; i < tmpProTable.size(); i++) proTable.push_back(tmpProTable[i]);
     for (int i = 0; i < tmpVarTable.size(); i++){
         for (int j = 0; j < proTable.size(); j++){
-            if (tmpVarTable[i].vlev == proTable[j].plev && 
-                    tmpVarTable[i].vpro == proTable[i].pname){ 
-                proTable[j].ladr = i + varTable.size() - 1;
+            if (tmpVarTable[i].vlev == proTable[j].plev+1 && 
+                    tmpVarTable[i].vpro == proTable[j].pname){ 
+                proTable[j].ladr = i + (int)varTable.size() - 1;
                 break;
             }
         }
     }
+    for (int i = 0; i < tmpLoseSymbol.size(); i++) errIden[4].push_back(tmpLoseSymbol[i]);
+    for (int i = 0; i < tmpMatchErr.size(); i++) errIden[5].push_back(tmpMatchErr[i]);
 }
