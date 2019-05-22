@@ -25,7 +25,7 @@ using namespace std;
         wordIdx = bufferIdx;\
         nextWordIdx = wordIdx+1;\
         errState = correct;\
-        clearErrRec(loseIdx, matchIdx);\
+        clearErrRec(loseIdx.top(), matchIdx.top());\
         return false;\
     }
 #define CHECK_BACKTRACKING()\
@@ -33,7 +33,7 @@ using namespace std;
         wordIdx = bufferIdx;\
         nextWordIdx = wordIdx+1;\
         errState = correct;\
-        clearErrRec(loseIdx, matchIdx);\
+        clearErrRec(loseIdx.top(), matchIdx.top());\
         return;\
     }
 #define PUSH_TO_VECTOR()\
@@ -44,8 +44,8 @@ using namespace std;
 #define MY_DEBUG()\
     printf("Debug:\tstate:%d index:%d%16s%16s\n", errState, wordIdx, buffer[wordIdx].word.c_str(), buffer[nextWordIdx].word.c_str())
 #define INIT_IDX()\
-    int loseIdx = tmpLoseSymbol.size() - 1;\
-    int matchIdx = tmpMatchErr.size() - 1
+    loseIdx.push(tmpLoseSymbol.size());\
+    matchIdx.push(tmpMatchErr.size())
 
 ErrType errState(correct);
 State state;
@@ -55,6 +55,7 @@ vector<Word> buffer;
 vector<VarTable> varTable, tmpVarTable;
 vector<ProTable> proTable, tmpProTable;
 stack<string> proStack;
+stack<int> loseIdx, matchIdx;
 int deep(-1), parIdx(-1);
 string lastS, nowS("");
 

@@ -6,10 +6,11 @@ vector<int> loseS, matchE;
 
 void loseSymbol(){
     errState = correct;
-    //errIden[4].push_back(lastS);
-    tmpLoseSymbol.push_back(lastS);
+    errIden[4].push_back(lastS);
+    fprintf(gErr, "error: loseSymbol %s\n", lastS.c_str());
+    /*tmpLoseSymbol.push_back(lastS);
     loseS.push_back((int)tmpLoseSymbol.size() - 1);
-    /*if (lastS == "variable") printf("lose identifier\n");
+    if (lastS == "variable") printf("lose identifier\n");
     else printf("error: loseSymbol %s\n", lastS.c_str());*/
 }
 
@@ -69,9 +70,9 @@ bool check_var_exe(int idx){
     return false;
 }
 void setTable(int idx){
-    ProTable pt(buffer[idx].word, deep, varTable.size(), varTable.size());
-    VarTable vt(buffer[idx].word, proStack.top(), 0, deep, varTable.size()); //变量
-    VarTable vt_(buffer[idx].word, proStack.top(), 1, deep, varTable.size()); //形参
+    ProTable pt(buffer[idx].word, deep, (int)varTable.size(), (int)varTable.size());
+    VarTable vt(buffer[idx].word, proStack.top(), 0, deep, (int)varTable.size()); //变量
+    VarTable vt_(buffer[idx].word, proStack.top(), 1, deep, (int)varTable.size()); //形参
 
     switch(state){
         case dec_pro: 
@@ -120,23 +121,25 @@ void reportErr(){
                     fprintf(gErr, "error: unknow symbol '%s', did you mean '%s'?\n", errIden[i][2 * j].c_str(), errIden[i][2 * j + 1].c_str());
                     break;
             }
-        }
+        } 
     }
     push();
     clearErrRec(0, 0);
 }
-void clearErrRec(int loseIdx, int matchIdx){
+void clearErrRec(int lIdx, int mIdx){
     for (int i = 0; i < 4; i++) errIden[i].clear();
     tmpVarTable.clear();
     tmpProTable.clear();
-    if (tmpLoseSymbol.size() != 0) tmpLoseSymbol.erase(tmpLoseSymbol.begin() + loseS[0], tmpLoseSymbol.end());
-    if (tmpMatchErr.size() != 0) tmpMatchErr.erase(tmpMatchErr.begin() + matchE[0], tmpMatchErr.end());
-    loseS.clear();
-    matchE.clear();
-    if (tmpLoseSymbol.size() > loseIdx) 
-        tmpLoseSymbol.erase(tmpLoseSymbol.begin() + loseIdx, tmpLoseSymbol.end());
-    if (tmpMatchErr.size() > matchIdx)
-        tmpMatchErr.erase(tmpMatchErr.begin() + matchIdx, tmpMatchErr.end());
+    //if (tmpLoseSymbol.size() != 0) tmpLoseSymbol.erase(tmpLoseSymbol.begin() + loseS[0], tmpLoseSymbol.end());
+    //if (tmpMatchErr.size() != 0) tmpMatchErr.erase(tmpMatchErr.begin() + matchE[0], tmpMatchErr.end());
+    //loseS.clear();
+    //matchE.clear();
+    if (tmpLoseSymbol.size() > lIdx) 
+        tmpLoseSymbol.erase(tmpLoseSymbol.begin() + lIdx, tmpLoseSymbol.end());
+    if (tmpMatchErr.size() > mIdx)
+        tmpMatchErr.erase(tmpMatchErr.begin() + mIdx, tmpMatchErr.end());
+    //if (loseIdx.size() > 0) loseIdx.pop();
+    //if (matchIdx.size() > 0) matchIdx.pop();
 }
 void push(){
     for (int i = 0; i < tmpVarTable.size(); i++) {

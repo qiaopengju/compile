@@ -47,6 +47,7 @@ extern vector<string> tmpLoseSymbol;
 extern vector<string> tmpMatchErr;
 extern vector<string> errIden[6];
 extern stack<string> proStack;
+extern stack<int> loseIdx, matchIdx;
 extern int deep;
 extern int parIdx;
 extern string lastS, nowS;
