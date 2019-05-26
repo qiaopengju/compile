@@ -3,7 +3,7 @@
                k 10            EOLN 24
                ; 23            EOLN 24
          integer  3            EOLN 24
-        function  7            EOLN 24
+            func 10            EOLN 24
                F 10            EOLN 24
                ( 21            EOLN 24
                n 10            EOLN 24
@@ -34,11 +34,10 @@
                ) 22            EOLN 24
              end  2            EOLN 24
                ; 23            EOLN 24
-            read  8            EOLN 24
+             rea 10            EOLN 24
                ( 21            EOLN 24
                m 10            EOLN 24
                ) 22            EOLN 24
-               ; 23            EOLN 24
                k 10            EOLN 24
               := 20            EOLN 24
                F 10            EOLN 24

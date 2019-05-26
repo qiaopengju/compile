@@ -97,3 +97,4 @@ void setTable(int);
 void reportErr();
 void clearErrRec(int, int);
 void push();
+void getWord();

@@ -1,4 +1,5 @@
 #include "grammerAnalyse.h"
+
 vector<string> errIden[6];
 vector<string> tmpLoseSymbol;
 vector<string> tmpMatchErr;
@@ -6,10 +7,10 @@ vector<int> loseS, matchE;
 
 void loseSymbol(){
     errState = correct;
-    errIden[4].push_back(lastS);
-    fprintf(gErr, "error: loseSymbol %s\n", lastS.c_str());
-    /*tmpLoseSymbol.push_back(lastS);
-    loseS.push_back((int)tmpLoseSymbol.size() - 1);
+    //errIden[4].push_back(lastS);
+    //fprintf(gErr, "error: loseSymbol %s\n", lastS.c_str());
+    tmpLoseSymbol.push_back(lastS);
+    /*loseS.push_back((int)tmpLoseSymbol.size() - 1);
     if (lastS == "variable") printf("lose identifier\n");
     else printf("error: loseSymbol %s\n", lastS.c_str());*/
 }
@@ -19,9 +20,12 @@ void matchErr(){
     /*errIden[5].push_back(buffer[wordIdx].word);
     errIden[5].push_back(nowS);*/
     tmpMatchErr.push_back(buffer[wordIdx].word);
-    tmpMatchErr.push_back(nowS);
+    tmpMatchErr.push_back(lastS);
     matchE.push_back((int)tmpMatchErr.size() - 1);
     matchE.push_back((int)tmpMatchErr.size() - 2);
+    if (tmpMatchErr[tmpMatchErr.size()-1] == "read"){
+        getWord();
+    }
     //printf("error: unknow symbol '%s', did you mean '%s'?\n", buffer[wordIdx].word.c_str(), nowS.c_str());
 }
 
@@ -98,7 +102,8 @@ void setTable(int idx){
     }
 }
 void reportErr(){
-    for (int i = 0; i < 4; i++){
+    push();
+    for (int i = 0; i < 6; i++){
         for (int j = 0; j < errIden[i].size(); j++){
             switch(i){
                 case 0:  //exe pro
@@ -123,18 +128,19 @@ void reportErr(){
             }
         } 
     }
-    push();
     clearErrRec(0, 0);
+    errIden[4].clear();
+    errIden[5].clear();
 }
 void clearErrRec(int lIdx, int mIdx){
-    for (int i = 0; i < 4; i++) errIden[i].clear();
+    for (int i = 0; i < 5; i++) errIden[i].clear();
     tmpVarTable.clear();
     tmpProTable.clear();
     //if (tmpLoseSymbol.size() != 0) tmpLoseSymbol.erase(tmpLoseSymbol.begin() + loseS[0], tmpLoseSymbol.end());
     //if (tmpMatchErr.size() != 0) tmpMatchErr.erase(tmpMatchErr.begin() + matchE[0], tmpMatchErr.end());
     //loseS.clear();
     //matchE.clear();
-    if (tmpLoseSymbol.size() > lIdx) 
+    if (tmpLoseSymbol.size() > lIdx)
         tmpLoseSymbol.erase(tmpLoseSymbol.begin() + lIdx, tmpLoseSymbol.end());
     if (tmpMatchErr.size() > mIdx)
         tmpMatchErr.erase(tmpMatchErr.begin() + mIdx, tmpMatchErr.end());

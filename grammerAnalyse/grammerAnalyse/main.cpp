@@ -101,7 +101,7 @@ void tableToFile(){
                 proTable[i].pname.c_str(), proTable[i].plev, proTable[i].fadr, proTable[i].ladr);
     }
     for (int i = 0; i < varTable.size(); i++){
-        fprintf(gVarTable, "pname:%-16s\tvproc:%-16s\tvkind:%d\tvlev:%d\tvadr:%d\ttypes:ints\n", 
+        fprintf(gVarTable, "vname:%-16s\tvproc:%-16s\tvkind:%d\tvlev:%d\tvadr:%d\ttypes:ints\n", 
                 varTable[i].vname.c_str(), varTable[i].vpro.c_str(), varTable[i].vkind,
                 varTable[i].vlev, varTable[i].vadr);
     }
@@ -153,6 +153,7 @@ void declareList_(){
     declareList_();
 }
 bool declare(){
+    if (buffer[nextWordIdx].word == "(") return false;
     if (!varDeclare()){
         if (!funcDeclare()) return false;
     }
@@ -173,7 +174,14 @@ bool varDeclare(){
     return true;
 }
 void var(){
-    identifier();
+    INIT_IDX();
+    if (buffer[nextWordIdx].type != 10){
+        identifier();
+    } else{
+        clearErrRec(loseIdx.top(), matchIdx.top());
+        errState = err;
+        return;
+    }
 }
 void identifier(){
     lastS = nowS;
@@ -186,10 +194,11 @@ void identifier(){
         if (errState == correct) {
             errState = err;
             //if (buffer[wordIdx-1].word == "integer" && buffer[wordIdx].word == ";") loseSymbolCheck();
-        }
-        else if (errState == err && buffer[nextWordIdx].type == 10){
+        } else if (errState == err && buffer[wordIdx].type < 10){ return;
+        } else if (errState == err && buffer[nextWordIdx].type == 10){
             matchErr();
             setTable(nextWordIdx);
+            getWord();
             getWord();
         }
     }
@@ -201,12 +210,26 @@ bool funcDeclare(){
 
     CHECK_WORD("integer");
     CHECK_WORD("function");
-    RETURN_BACKTRACKING();
+    //RETURN_BACKTRACKING();
+    if (buffer[wordIdx].type == 10 && buffer[nextWordIdx].type == 10){
+        lastS = "function";
+        matchErr();
+        getWord();
+    }
     identifier();
+    string funcTmpW = buffer[wordIdx].word;
+    if (funcTmpW == "read" || funcTmpW == "write") {
+        wordIdx = bufferIdx;
+        nextWordIdx = wordIdx+1;
+        errState = correct;
+        clearErrRec(loseIdx.top(), matchIdx.top());
+        return false;
+    }
     CHECK_WORD("(");
     parameter();
     CHECK_WORD(")");
     CHECK_WORD(";");
+    RETURN_BACKTRACKING();
     funcBody();
     RETURN_BACKTRACKING();
     reportErr();
@@ -240,7 +263,7 @@ void executeList_(){
     INIT_IDX();
 
     CHECK_WORD(";");
-    CHECK_BACKTRACKING();
+    //CHECK_BACKTRACKING();
     if (!execute()) errState = err;
     CHECK_BACKTRACKING();
 
@@ -248,17 +271,26 @@ void executeList_(){
     executeList_();
 }
 bool execute(){
-    if (!read()) 
-        if (!write())
-            if (!assignment())
+    ErrType tmpType = errState;
+    if (!read()){
+        errState = tmpType;
+        if (!write()){
+            errState = tmpType;
+            nowS = ";";
+            if (!assignment()){
+                errState = tmpType;
+                nowS = ";";
                 if (!condition())
                     return false;
+            }
+        }
+    }
     return true;
 }
 bool read(){
     unsigned bufferIdx(wordIdx);
     INIT_IDX();
-
+    if (buffer[wordIdx].word == "write") return false;
     CHECK_WORD("read");
     CHECK_WORD("(");
     RETURN_BACKTRACKING();
@@ -275,6 +307,10 @@ bool write(){
 
     CHECK_WORD("write");
     CHECK_WORD("(");
+    if (buffer[wordIdx].word == "("){
+        getWord();
+        return true;
+    }
     RETURN_BACKTRACKING();
     state = exe_var;
     var();

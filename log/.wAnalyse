@@ -23,7 +23,7 @@
                1 11            EOLN 24
             else  6            EOLN 24
                F 10            EOLN 24
-              := 20            EOLN 24
+               = 12            EOLN 24
                n 10            EOLN 24
                * 19            EOLN 24
                F 10            EOLN 24
