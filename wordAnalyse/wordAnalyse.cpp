@@ -28,8 +28,8 @@ void accomplishOneW();
 
 int main(){
     fProgram = fopen("program", "r");
-    fwAnalyse = fopen("log/.wAnalyse", "w");
-    fwErr = fopen("log/.wordErr", "w");
+    fwAnalyse = fopen(".wAnalyse", "w");
+    fwErr = fopen(".wordErr", "w");
 
     char c = getc(fProgram);
     while(c != EOF){

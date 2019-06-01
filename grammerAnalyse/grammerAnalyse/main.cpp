@@ -265,11 +265,20 @@ void execute(){
     } else{//如果执行语句中出现声明，则跳转到其fllow集';'中，并打出错误
         //err
         string tS = "";
-        while(buffer[wordIdx].word != ";"){
-            tS = tS + buffer[wordIdx].word;
+        if (buffer[wordIdx].word == "begin"){
+            while(buffer[wordIdx].word != "end"){
+                tS = tS + " " + buffer[wordIdx].word;
+                getWord();
+            }
+            tS = tS + " end";
             getWord();
+        } else{
+            while(buffer[wordIdx].word != ";"){
+                tS = tS + " " + buffer[wordIdx].word;
+                getWord();
+            }
         }
-        fprintf(gErr, "error: wrong paragraphs: '%s'\n", tS.c_str());
+        fprintf(gErr, "error: the sentence shoun't be here: '%s'\n", tS.c_str());
         errState = correct;
     }
 }
@@ -280,6 +289,14 @@ void read(){
     var();
     CHECK_WORD(")");
     reportErr();
+    
+    if (errState == err){ //若还有错，则跳至FOLLOW集
+        while(buffer[wordIdx].word != ";" && buffer[wordIdx].word != "end"
+                && buffer[wordIdx].word != "EOF"){
+            getWord();
+        }
+        errState = correct;
+    }
 }
 void write(){
     CHECK_WORD("write");
@@ -288,6 +305,14 @@ void write(){
     var();
     CHECK_WORD(")");
     reportErr();
+
+    if (errState == err){ //若还有错，则跳至FOLLOW集
+        while(buffer[wordIdx].word != ";" && buffer[wordIdx].word != "end"
+                &&buffer[wordIdx].word != "EOF"){
+            getWord();
+        }
+        errState = correct;
+    }
 }
 void assignment(){
     state = exe_var;
@@ -295,6 +320,14 @@ void assignment(){
     CHECK_WORD(":=");
     arithmenticExp();
     reportErr();
+
+    if (errState == err){ //若还有错，则跳至FOLLOW集
+        while(buffer[wordIdx].word != ";" && buffer[wordIdx].word != "end"
+                &&buffer[wordIdx].word != "EOF"){
+            getWord();
+        }
+        errState = correct;
+    }
 }
 void arithmenticExp(){
     item();
@@ -370,6 +403,7 @@ void condition(){
     CHECK_WORD("else");
     execute();
     reportErr();
+
 }
 void conditionExp(){
     arithmenticExp();
