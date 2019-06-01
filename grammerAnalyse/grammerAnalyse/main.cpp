@@ -56,18 +56,22 @@ vector<VarTable> varTable, tmpVarTable;
 vector<ProTable> proTable, tmpProTable;
 stack<string> proStack;
 stack<int> loseIdx, matchIdx;
-int deep(-1), parIdx(-1);
+int deep(-1), parIdx(-1), lines(0);
 string lastS, nowS("");
 
 void getWord(){
     char cTmpW[17], cEndW[17];
-    string sTmpW, sEndW;
+    string sTmpW;
     struct Word tmpWord;
     int tmpT;
 
     //if (buffer.size() != 0) lastS = buffer[wordIdx].word;
     if (nextWordIdx+1 == buffer.size()){ //在buffer顶部,读取新的词
-        fscanf(fWords, "%16s %2d%16s 24\n", cTmpW, &tmpT, cEndW);
+        //fscanf(fWords, "%16s %2d\n", cTmpW, &tmpT);
+        do {
+            fscanf(fWords, "%16s %2d\n", cTmpW, &tmpT);
+            if (tmpT == 24) lines++;
+        } while (tmpT == 24);
         PUSH_TO_VECTOR();
         wordIdx++;
         nextWordIdx++;
@@ -75,9 +79,16 @@ void getWord(){
         wordIdx++;
         nextWordIdx++;
     } else{ //buffer为空,读取两个新的词
-        fscanf(fWords, "%16s %2d%16s 24\n", cTmpW, &tmpT, cEndW);
+        do {
+            fscanf(fWords, "%16s %2d\n", cTmpW, &tmpT);
+            if (tmpT == 24) lines++;
+        } while (tmpT == 24);
         PUSH_TO_VECTOR();
-        fscanf(fWords, "%16s %2d%16s 24\n", cTmpW, &tmpT, cEndW);
+        do {
+            fscanf(fWords, "%16s %2d\n", cTmpW, &tmpT);
+            if (tmpT == 24) lines++;
+        } while (tmpT == 24);
+        //fscanf(fWords, "%16s %2d\n", cTmpW, &tmpT);
         PUSH_TO_VECTOR();
     }
 }
@@ -111,7 +122,7 @@ int main(){
     fWords = fopen("wAnalyse", "r");
     gVarTable= fopen(".var", "w");
     gProcessTable = fopen(".pro", "w");
-    gErr = fopen(".err", "w");
+    gErr = fopen(".grammerErr", "w");
 
     getWord();
     program();
@@ -141,47 +152,35 @@ void subProgram(){
 }
 void declareList(){
     declare();
-    declareList_();
+
+    if (buffer[nextWordIdx].word == "integer"){
+        declareList_();
+    }
 }
 void declareList_(){
-    unsigned bufferIdx(wordIdx);
-    INIT_IDX();
-
     CHECK_WORD(";");
-    if (!declare()) errState = err;
-    CHECK_BACKTRACKING();
-    declareList_();
-}
-bool declare(){
-    if (buffer[nextWordIdx].word == "(") return false;
-    if (!varDeclare()){
-        if (!funcDeclare()) return false;
-    }
-    return true;
-}
-bool varDeclare(){
-    unsigned bufferIdx = wordIdx;
-    INIT_IDX();
+    declare();
 
+    if (buffer[nextWordIdx].word == "integer"){
+        declareList_();
+    }
+}
+void declare(){
+    if (buffer[nextWordIdx].word == "function"){
+        funcDeclare();
+    } else{
+        varDeclare();
+    }
+}
+void varDeclare(){
     CHECK_WORD("integer");
-    if (buffer[wordIdx].type != 4){
-        state = dec_var;
-        var();
-    }
+    state = dec_var;
+    var();
 
-    RETURN_BACKTRACKING();
     reportErr();
-    return true;
 }
 void var(){
-    INIT_IDX();
-    if (buffer[nextWordIdx].type != 10){
-        identifier();
-    } else{
-        clearErrRec(loseIdx.top(), matchIdx.top());
-        errState = err;
-        return;
-    }
+    identifier();
 }
 void identifier(){
     lastS = nowS;
@@ -193,8 +192,6 @@ void identifier(){
     } else{
         if (errState == correct) {
             errState = err;
-            //if (buffer[wordIdx-1].word == "integer" && buffer[wordIdx].word == ";") loseSymbolCheck();
-        } else if (errState == err && buffer[wordIdx].type < 10){ return;
         } else if (errState == err && buffer[nextWordIdx].type == 10){
             matchErr();
             setTable(nextWordIdx);
@@ -203,37 +200,19 @@ void identifier(){
         }
     }
 }
-bool funcDeclare(){
+void funcDeclare(){
     state = dec_pro;
-    unsigned bufferIdx = wordIdx;
-    INIT_IDX();
 
     CHECK_WORD("integer");
     CHECK_WORD("function");
-    //RETURN_BACKTRACKING();
-    if (buffer[wordIdx].type == 10 && buffer[nextWordIdx].type == 10){
-        lastS = "function";
-        matchErr();
-        getWord();
-    }
     identifier();
-    string funcTmpW = buffer[wordIdx].word;
-    if (funcTmpW == "read" || funcTmpW == "write") {
-        wordIdx = bufferIdx;
-        nextWordIdx = wordIdx+1;
-        errState = correct;
-        clearErrRec(loseIdx.top(), matchIdx.top());
-        return false;
-    }
+
     CHECK_WORD("(");
     parameter();
     CHECK_WORD(")");
     CHECK_WORD(";");
-    RETURN_BACKTRACKING();
     funcBody();
-    RETURN_BACKTRACKING();
     reportErr();
-    return true;
 }
 void parameter(){
     state = par_var;
@@ -256,197 +235,148 @@ void funcBody(){
 }
 void executeList(){
     execute();
-    executeList_();
+
+    if (buffer[wordIdx].word == ";" || buffer[nextWordIdx].word == "read" ||
+            buffer[nextWordIdx].word == "write" || buffer[nextWordIdx].type == 10 || 
+            buffer[nextWordIdx].word == "if"){
+        executeList_();
+    }
 }
 void executeList_(){
-    unsigned bufferIdx(wordIdx);
-    INIT_IDX();
-
     CHECK_WORD(";");
-    //CHECK_BACKTRACKING();
-    if (!execute()) errState = err;
-    CHECK_BACKTRACKING();
+    execute();
 
     reportErr();
-    executeList_();
-}
-bool execute(){
-    ErrType tmpType = errState;
-    if (!read()){
-        errState = tmpType;
-        if (!write()){
-            errState = tmpType;
-            nowS = ";";
-            if (!assignment()){
-                errState = tmpType;
-                nowS = ";";
-                if (!condition())
-                    return false;
-            }
-        }
+    if (buffer[wordIdx].word == ";" || buffer[nextWordIdx].word == "read" ||
+            buffer[nextWordIdx].word == "write" || buffer[nextWordIdx].type == 10 || 
+            buffer[nextWordIdx].word == "if"){
+        executeList_();
     }
-    return true;
 }
-bool read(){
-    unsigned bufferIdx(wordIdx);
-    INIT_IDX();
-    if (buffer[wordIdx].word == "write") return false;
+void execute(){
+    if (buffer[wordIdx].word == "read"){
+        read();
+    } else if (buffer[wordIdx].word == "write"){
+        write();
+    } else if (buffer[wordIdx].type == 10){
+        assignment();
+    } else if (buffer[wordIdx].word == "if"){
+        condition();
+    } else{//如果执行语句中出现声明，则跳转到其fllow集';'中，并打出错误
+        //err
+        string tS = "";
+        while(buffer[wordIdx].word != ";"){
+            tS = tS + buffer[wordIdx].word;
+            getWord();
+        }
+        fprintf(gErr, "error: wrong paragraphs: '%s'\n", tS.c_str());
+        errState = correct;
+    }
+}
+void read(){
     CHECK_WORD("read");
     CHECK_WORD("(");
-    RETURN_BACKTRACKING();
     state = exe_var;
     var();
     CHECK_WORD(")");
-    RETURN_BACKTRACKING();
     reportErr();
-    return true;
 }
-bool write(){
-    unsigned bufferIdx(wordIdx);
-    INIT_IDX();
-
+void write(){
     CHECK_WORD("write");
     CHECK_WORD("(");
-    if (buffer[wordIdx].word == "("){
-        getWord();
-        return true;
-    }
-    RETURN_BACKTRACKING();
     state = exe_var;
     var();
     CHECK_WORD(")");
-    RETURN_BACKTRACKING();
     reportErr();
-    return true;
 }
-bool assignment(){
-    unsigned bufferIdx(wordIdx);
-    INIT_IDX();
-
+void assignment(){
     state = exe_var;
     var();
     CHECK_WORD(":=");
-    RETURN_BACKTRACKING();
-    reportErr();
     arithmenticExp();
-    RETURN_BACKTRACKING();
     reportErr();
-    return true;
 }
 void arithmenticExp(){
     item();
-    arithmenticExp_();
+    if (buffer[wordIdx].word == "-" && (buffer[nextWordIdx].type == 10 ||
+            buffer[nextWordIdx].type == 11)){
+        arithmenticExp_();
+    }
 }
 void arithmenticExp_(){
-    unsigned bufferIdx(wordIdx);
-    INIT_IDX();
-
     CHECK_WORD("-");
-    CHECK_BACKTRACKING();
-    if (!item()) errState = err;
-    CHECK_BACKTRACKING();
+    item();
 
     reportErr();
-    arithmenticExp_();
+    if (buffer[wordIdx].word == "-" || buffer[nextWordIdx].type == 10 ||
+            buffer[nextWordIdx].type == 11){
+        arithmenticExp_();
+    }
 }
-bool item(){
-    if (!factor()) return false;
-    item_();
-
-    return true;
+void item(){
+    factor();
+    if (buffer[wordIdx].word == "*"){
+        item_();
+    }
 }
-bool item_(){
-    unsigned bufferIdx(wordIdx);
-    INIT_IDX();
-
+void item_(){
     CHECK_WORD("*");
-    RETURN_BACKTRACKING();
-    if (!factor()) errState = err;
-    RETURN_BACKTRACKING();
-    reportErr();
-    return true;
-}
-bool factor(){
-    unsigned bufferIdx(wordIdx);
-    unsigned backTrackNum(0);
-    INIT_IDX();
+    factor();
 
-    state = exe_pro;
-    if (!funcCall()){
-        backTrackNum++;
-        errState = correct;
-        state = exe_var;
-        var();
-        if (errState == err){
-            backTrackNum++;
-            errState = correct;
-            if (!constNum()){
-                backTrackNum++;
-            }
-        }
-    }
-    if (backTrackNum == 3) {
-        errState = err;
-        RETURN_BACKTRACKING();
-    }
-    errState = correct;
     reportErr();
-    return true;
 }
-bool constNum(){
+void factor(){
+    getWord(); getWord(); 
+    wordIdx -= 2; nextWordIdx -= 2;
+    if (buffer[wordIdx].type == 10){
+        if (buffer[nextWordIdx].word == "("){
+            state = exe_pro;
+            funcCall();
+        } else{
+            state = exe_var;
+            var();
+        }
+    } else if (buffer[wordIdx].type == 11){
+        constNum();
+    }
+    reportErr();
+}
+void constNum(){
     if (buffer[wordIdx].type == 11) {
         loseSymbolCheck();
         getWord();
     } else{
         if (errState == correct) {
             errState = err;
-        }
-        else if (errState == err && buffer[nextWordIdx].type == 11){
+        } else if (errState == err && buffer[nextWordIdx].type == 11){
             matchErr();
             getWord();
-            return true;
         }
-        return false;
     }
-    return true;
 }
-bool funcCall(){
-    unsigned bufferIdx(wordIdx);
-    state = exe_pro;
-    INIT_IDX();
-
+void funcCall(){
     identifier();
     CHECK_WORD("(");
-    RETURN_BACKTRACKING();
 
     arithmenticExp();
     CHECK_WORD(")");
-    RETURN_BACKTRACKING();
     reportErr();
-    return true;
 }
-bool condition(){
-    unsigned bufferIdx(wordIdx);
-    unsigned backTrackNum(0);
-    INIT_IDX();
-
+void condition(){
     CHECK_WORD("if");
-    RETURN_BACKTRACKING();
     conditionExp();
     CHECK_WORD("then");
     execute();
     CHECK_WORD("else");
     execute();
-    RETURN_BACKTRACKING();
     reportErr();
-    return true;
 }
 void conditionExp(){
     arithmenticExp();
     conditionOpe();
     arithmenticExp();
 }
-bool conditionOpe(){
+void conditionOpe(){
     if (buffer[wordIdx].type >= 13 && buffer[wordIdx].type <= 17) {
         loseSymbolCheck();
         getWord();
@@ -458,9 +388,6 @@ bool conditionOpe(){
                 buffer[wordIdx].type <= 17){
             matchErr();
             getWord();
-            return true;
         }
-        return false;
     }
-    return true;
 }

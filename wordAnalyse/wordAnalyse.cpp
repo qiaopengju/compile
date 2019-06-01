@@ -3,7 +3,7 @@
 #include <string>
 
 #define PRINT(f, name, type) \
-    fprintf(f, "%16s %2d%16s %d\n", name, type, "EOLN", 24)
+    fprintf(f, "%16s %2d\n", name, type)
 
 #define IDENTIFIER() \
     if (!s.compare("begin")) state = 1;\
@@ -27,9 +27,9 @@ void wordAnalyse(char);
 void accomplishOneW();
 
 int main(){
-    fProgram = fopen("../program", "r");
-    fwAnalyse = fopen("../log/.wAnalyse", "w");
-    fwErr = fopen("../log/.err", "w");
+    fProgram = fopen("program", "r");
+    fwAnalyse = fopen("log/.wAnalyse", "w");
+    fwErr = fopen("log/.wordErr", "w");
 
     char c = getc(fProgram);
     while(c != EOF){
@@ -37,7 +37,10 @@ int main(){
         if (c == ' ' || c == '\n'){
             if (state == 10 || state == 11) accomplishOneW();
             else if (state == 20) errPrint(colonErr);
-            if (c == '\n') ++lineNum;
+            if (c == '\n'){
+                ++lineNum;
+                fprintf(fwAnalyse, "%16s %2d\n", "EOLN", 24);
+            }
         }else wordAnalyse(c);
         c = getc(fProgram);
     }

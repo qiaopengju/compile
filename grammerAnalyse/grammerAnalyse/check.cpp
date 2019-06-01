@@ -53,22 +53,22 @@ bool check_var_dec(int idx){
 }
 bool check_pro_exe(int idx){
     for (int i = deep; i >= 0; i--){ //从当前深度找起
-        for (int i = 0; i < proTable.size(); i++){
-            if (proTable[i].plev == deep && proTable[i].pname == buffer[idx].word) return true;
+        for (int j = 0; j < proTable.size(); j++){
+            if (proTable[j].plev == i && proTable[j].pname == buffer[idx].word) return true;
         }
-        for (int i = 0; i < tmpProTable.size(); i++){
-            if (tmpProTable[i].plev == deep && tmpProTable[i].pname == buffer[idx].word) return true;
+        for (int j = 0; j < tmpProTable.size(); j++){
+            if (tmpProTable[j].plev == i && tmpProTable[j].pname == buffer[idx].word) return true;
         }
     }
     return false;
 }
 bool check_var_exe(int idx){
     for (int i = deep; i >= 0; i--){ //从当前深度找起
-        for (int i = 0; i < varTable.size(); i++){
-            if (varTable[i].vlev == deep && varTable[i].vname == buffer[idx].word) return true;
+        for (int j = 0; j < varTable.size(); j++){
+            if (varTable[j].vlev == i && varTable[j].vname == buffer[idx].word) return true;
         }
-        for (int i = 0; i < tmpVarTable.size(); i++){
-            if (tmpVarTable[i].vlev == deep && tmpVarTable[i].vname == buffer[idx].word) return true;
+        for (int j = 0; j < tmpVarTable.size(); j++){
+            if (tmpVarTable[j].vlev == i && tmpVarTable[j].vname == buffer[idx].word) return true;
         }
     }
     return false;
