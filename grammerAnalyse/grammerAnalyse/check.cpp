@@ -8,11 +8,11 @@ vector<int> loseS, matchE;
 void loseSymbol(){
     errState = correct;
     //errIden[4].push_back(lastS);
-    //fprintf(gErr, "error: loseSymbol %s\n", lastS.c_str());
+    //fprintf(gErr, "\033[1;31m error:\033[0m loseSymbol %s\n", lastS.c_str());
     tmpLoseSymbol.push_back(lastS);
     /*loseS.push_back((int)tmpLoseSymbol.size() - 1);
     if (lastS == "variable") printf("lose identifier\n");
-    else printf("error: loseSymbol %s\n", lastS.c_str());*/
+    else printf("\033[1;31m error:\033[0m loseSymbol %s\n", lastS.c_str());*/
 }
 
 void matchErr(){
@@ -26,7 +26,7 @@ void matchErr(){
     if (tmpMatchErr[tmpMatchErr.size()-1] == "read"){
         getWord();
     }
-    //printf("error: unknow symbol '%s', did you mean '%s'?\n", buffer[wordIdx].word.c_str(), nowS.c_str());
+    //printf("\033[1;31m error:\033[0m unknow symbol '%s', did you mean '%s'?\n", buffer[wordIdx].word.c_str(), nowS.c_str());
 }
 
 /*when word correct, do:*/
@@ -107,23 +107,23 @@ void reportErr(){
         for (int j = 0; j < errIden[i].size(); j++){
             switch(i){
                 case 0:  //exe pro
-                    fprintf(gErr, "error: undeclared of function: '%s'\n", errIden[i][j].c_str());
+                    fprintf(gErr, "\033[1;31m error:\033[0m undeclared of function: '%s'\n", errIden[i][j].c_str());
                     break;
                 case 1:  //exe var
-                    fprintf(gErr, "error: undeclared of variable: '%s'\n", errIden[i][j].c_str());
+                    fprintf(gErr, "\033[1;31m error:\033[0m undeclared of variable: '%s'\n", errIden[i][j].c_str());
                     break;
                 case 2:  //dec pro
-                    fprintf(gErr, "error: redefinition of function: '%s'\n", errIden[i][j].c_str());
+                    fprintf(gErr, "\033[1;31m error:\033[0m redefinition of function: '%s'\n", errIden[i][j].c_str());
                     break;
                 case 3: //dec var
-                    fprintf(gErr, "error: redefinition of variable: '%s'\n", errIden[i][j].c_str());
+                    fprintf(gErr, "\033[1;31m error:\033[0m redefinition of variable: '%s'\n", errIden[i][j].c_str());
                     break;
                 case 4: //lose symbol
-                    fprintf(gErr, "error: loseSymbol %s\n", errIden[i][j].c_str());
+                    fprintf(gErr, "\033[1;31m error:\033[0m loseSymbol %s\n", errIden[i][j].c_str());
                     break;
                 case 5: //match err
                     if (2 * j >= errIden[i].size()) break;
-                    fprintf(gErr, "error: unknow symbol '%s', did you mean '%s'?\n", errIden[i][2 * j].c_str(), errIden[i][2 * j + 1].c_str());
+                    fprintf(gErr, "\033[1;31m error:\033[0m unknow symbol '%s', did you mean '%s'?\n", errIden[i][2 * j].c_str(), errIden[i][2 * j + 1].c_str());
                     break;
             }
         } 

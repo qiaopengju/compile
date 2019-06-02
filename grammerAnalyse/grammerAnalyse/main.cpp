@@ -96,10 +96,10 @@ void printNormalErr(){
     for (int i = 4; i <=5; i++){
         for (int j = 0; j < errIden[i].size(); j++){
             if (i == 4){ //lose symbol
-                fprintf(gErr, "error: loseSymbol %s\n", errIden[i][j].c_str());
+                fprintf(gErr, "\033[1;31m error:\033[0m loseSymbol %s\n", errIden[i][j].c_str());
             }else{
                 if (2 * j >= errIden[i].size()) break;
-                fprintf(gErr, "error: unknow symbol '%s', did you mean '%s'?\n", errIden[i][2 * j].c_str(), errIden[i][2 * j + 1].c_str());
+                fprintf(gErr, "\033[1;31m error:\033[0m unknow symbol '%s', did you mean '%s'?\n", errIden[i][2 * j].c_str(), errIden[i][2 * j + 1].c_str());
             }
         }
     }
@@ -153,7 +153,7 @@ void subProgram(){
 void declareList(){
     declare();
 
-    if (buffer[nextWordIdx].word == "integer"){
+    if (buffer[nextWordIdx].word == "integer" || buffer[wordIdx].word == "integer"){
         declareList_();
     }
 }
@@ -161,7 +161,7 @@ void declareList_(){
     CHECK_WORD(";");
     declare();
 
-    if (buffer[nextWordIdx].word == "integer"){
+    if (buffer[nextWordIdx].word == "integer" || buffer[wordIdx].word == "integer"){
         declareList_();
     }
 }
@@ -278,7 +278,7 @@ void execute(){
                 getWord();
             }
         }
-        fprintf(gErr, "error: the sentence shoun't be here: '%s'\n", tS.c_str());
+        fprintf(gErr, "\033[1;31m error:\033[0m the sentence shoun't be here: '%s'\n", tS.c_str());
         errState = correct;
     }
 }
