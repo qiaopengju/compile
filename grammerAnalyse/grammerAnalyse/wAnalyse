@@ -4,12 +4,8 @@
                k 10
                ; 23
             EOLN 24
-            inte 10
-               i 10
-               ; 23
-            EOLN 24
          integer  3
-            func 10
+        function  7
                F 10
                ( 21
                n 10
@@ -46,7 +42,9 @@
              end  2
                ; 23
             EOLN 24
-           readm 10
+            read  8
+               ( 21
+               m 10
                ) 22
                ; 23
             EOLN 24
@@ -55,6 +53,7 @@
                F 10
                ( 21
                m 10
+               ) 22
                ) 22
                ; 23
             EOLN 24

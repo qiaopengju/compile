@@ -273,7 +273,7 @@ void execute(){
             tS = tS + " end";
             getWord();
         } else{
-            while(buffer[wordIdx].word != ";"){
+            while(buffer[wordIdx].word != ";" && buffer[wordIdx].word != "end"){
                 tS = tS + " " + buffer[wordIdx].word;
                 getWord();
             }
@@ -330,7 +330,13 @@ void assignment(){
     }
 }
 void arithmenticExp(){
+    int i = wordIdx;
     item();
+    if (wordIdx == i){
+        lastS = "arithmentic exp";
+        loseSymbol();
+    }
+
     if (buffer[wordIdx].word == "-" && (buffer[nextWordIdx].type == 10 ||
             buffer[nextWordIdx].type == 11)){
         arithmenticExp_();
@@ -348,6 +354,7 @@ void arithmenticExp_(){
 }
 void item(){
     factor();
+
     if (buffer[wordIdx].word == "*"){
         item_();
     }
